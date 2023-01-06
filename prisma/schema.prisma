@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String   @unique
+  hash      String
+  cash      Float    @default(100000.00)
+  firstName String?
+
+  bookmarks Bookmark[]
+  Stock     Stock[]
+  History   History[]
+
+  @@map("users")
+}
+
+model Stock {
+  id     Int    @id @default(autoincrement())
+  ticker String
+  amount Int
+  userId Int
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map("stocks")
+}
+
+model History {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  ticker    String
+  price     Float
+  amount    Int
+  type      String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model CurrentStock {
+  ticker String @id
+  bp     Float
+  ap     Float
+}
+
+model DailyChart {
+  ticker String  @id
+  prices Float[]
+
+  @@map("dailyChart")
+}
+
+model Bookmark {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String?
+  link        String
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("bookmarks")
+}
+
+model Status {
+  status Boolean @id @default(false)
+}
