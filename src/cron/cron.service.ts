@@ -20,21 +20,21 @@ export class CronService {
     private config: ConfigService,
   ) {}
 
-  @Cron('15 30/1 15 * * 1-5')
+  @Cron('15 30/1 9 * * 1-5', { timeZone: 'America/New_York' })
   marketHalf() {
     this.cronMarketData().catch((error) => {
       console.log(error);
     });
   }
 
-  @Cron('15 */1 16-21 * * 1-5')
+  @Cron('15 */1 10-15 * * 1-5', { timeZone: 'America/New_York' })
   marketFull() {
     this.cronMarketData().catch((error) => {
       console.log(error);
     });
   }
 
-  @Cron('50 45/15 15 * * 1-5')
+  @Cron('50 45/15 9 * * 1-5', { timeZone: 'America/New_York' })
   chartQuarter() {
     const start = new Date(Date.now());
     start.setHours(15);
@@ -45,7 +45,7 @@ export class CronService {
     this.chartService.cronMarketData(start.toISOString(), end.toISOString());
   }
 
-  @Cron('50 */15 16-21 * * 1-5')
+  @Cron('50 */15 10-15 * * 1-5', { timeZone: 'America/New_York' })
   chartFull() {
     const start = new Date(Date.now());
     start.setHours(15);
@@ -56,7 +56,7 @@ export class CronService {
     this.chartService.cronMarketData(start.toISOString(), end.toISOString());
   }
 
-  @Cron('50 0 22 * * 1-5')
+  @Cron('50 0 16 * * 1-5', { timeZone: 'America/New_York' })
   chartClose() {
     const start = new Date(Date.now());
     start.setHours(15);
@@ -67,7 +67,7 @@ export class CronService {
     this.chartService.cronMarketData(start.toISOString(), end.toISOString());
   }
 
-  @Cron('50 15 22 * * 1-5')
+  @Cron('50 15 16 * * 1-5', { timeZone: 'America/New_York' })
   chartFinal() {
     const start = new Date(Date.now());
     start.setHours(15);
@@ -78,7 +78,7 @@ export class CronService {
     this.chartService.cronMarketData(start.toISOString(), end.toISOString());
   }
 
-  @Cron('0 0 22 * * *')
+  @Cron('0 0 16 * * *', { timeZone: 'America/New_York' })
   async closeMarket() {
     await this.prisma.status.updateMany({
       where: {
