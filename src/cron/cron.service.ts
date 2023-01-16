@@ -22,16 +22,12 @@ export class CronService {
 
   @Cron('15 30/1 9 * * 1-5', { timeZone: 'America/New_York' })
   marketHalf() {
-    this.cronMarketData().catch((error) => {
-      console.log(error);
-    });
+    this.cronMarketData();
   }
 
   @Cron('15 */1 10-15 * * 1-5', { timeZone: 'America/New_York' })
   marketFull() {
-    this.cronMarketData().catch((error) => {
-      console.log(error);
-    });
+    this.cronMarketData();
   }
 
   @Cron('50 45/15 9 * * 1-5', { timeZone: 'America/New_York' })
@@ -68,7 +64,18 @@ export class CronService {
   }
 
   @Cron('50 15 16 * * 1-5', { timeZone: 'America/New_York' })
-  chartFinal() {
+  chartFinal1() {
+    const start = new Date(Date.now());
+    start.setHours(15);
+    start.setMinutes(30);
+    start.setSeconds(0);
+    start.setMilliseconds(0);
+    const end = new Date(Date.now() - 910000);
+    this.chartService.cronMarketData(start.toISOString(), end.toISOString());
+  }
+
+  @Cron('50 30 16 * * 1-5', { timeZone: 'America/New_York' })
+  chartFinal2() {
     const start = new Date(Date.now());
     start.setHours(15);
     start.setMinutes(30);
@@ -79,8 +86,8 @@ export class CronService {
   }
 
   @Cron('0 0 16 * * *', { timeZone: 'America/New_York' })
-  async closeMarket() {
-    await this.prisma.status.updateMany({
+  closeMarket() {
+    this.prisma.status.updateMany({
       where: {
         status: true,
       },
@@ -90,9 +97,9 @@ export class CronService {
     });
   }
 
-  async cronMarketData() {
-    await this.getMarketData();
-    await this.prisma.status.updateMany({
+  cronMarketData() {
+    this.getMarketData();
+    this.prisma.status.updateMany({
       where: {
         status: false,
       },

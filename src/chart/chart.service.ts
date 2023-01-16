@@ -17,12 +17,12 @@ export class ChartService {
 
   public chart: Chart[] = [];
 
-  async cronMarketData(start: string, end: string) {
-    await this.getChartData(start, end);
+  cronMarketData(start: string, end: string) {
+    this.getChartData(start, end);
   }
 
   getChartData(start: string, end: string) {
-    return this.httpService.axiosRef
+    this.httpService.axiosRef
       .get('https://data.alpaca.markets/v2/stocks/bars', {
         headers: {
           'Content-Type': 'application/json',
@@ -54,11 +54,14 @@ export class ChartService {
         chartList.forEach((element) => {
           this.setChart(element);
         });
+      })
+      .catch((error) => {
+        console.log(error);
       });
   }
 
-  async setChart(chart: Chart) {
-    const char = await this.prisma.dailyChart.upsert({
+  setChart(chart: Chart) {
+    const char = this.prisma.dailyChart.upsert({
       where: {
         ticker: chart.ticker,
       },
