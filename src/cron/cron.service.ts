@@ -98,18 +98,11 @@ export class CronService {
   }
 
   cronMarketData() {
-    this.getMarketData();
-    this.prisma.status.updateMany({
-      where: {
-        status: false,
-      },
-      data: {
-        status: true,
-      },
-    });
+    this.updateMarketData();
+    this.setStatus();
   }
 
-  getMarketData() {
+  updateMarketData() {
     return this.httpService.axiosRef
       .get('https://data.alpaca.markets/v2/stocks/quotes/latest', {
         headers: {
@@ -122,20 +115,47 @@ export class CronService {
             'aapl,msft,goog,amzn,tsla,unh,tsm,jnj,v,meta,nvda,xom,wmt,pg,jpm,ma,hd,cvx,lly,ko,bac,pfe,pep,abbv,nvo,cost,baba,mrk,tmo,asml,avgo,tm,bhp,dis,dhr,azn,orcl,shel,csco,acn,adbe,mcd,abt,nvs,vz,tmus,ups,crm,nke,nee,wfc,cmcsa,qcom,txn,bmy,pm,ms,amd,unp,lin,tte,intc,schw,cop,ptr,ry,rtx,hon,cvs,low,amgn,t,hsbc,eqnr,intu,spgi,amt,bx',
         },
       })
-      .then((market) => {
-        const marketList = [];
-        for (const [key, value] of Object.entries(market.data.quotes)) {
-          marketList.push({
-            ticker: key,
-            ap: value['ap'],
-            bp: value['bp'],
+      .then(
+        (market) => {
+          const marketList = [];
+          for (const [key, value] of Object.entries(market.data.quotes)) {
+            marketList.push({
+              ticker: key,
+              ap: value['ap'],
+              bp: value['bp'],
+            });
+          }
+          marketList.sort((a, b) => (a.ticker > b.ticker ? 1 : -1));
+          marketList.forEach((element) => {
+            this.setMarket(element);
           });
-        }
-        marketList.sort((a, b) => (a.ticker > b.ticker ? 1 : -1));
-        marketList.forEach((element) => {
-          this.setMarket(element);
-        });
-      });
+        },
+        (error) => {
+          console.error('Could not load market data', error);
+        },
+      );
+  }
+
+  setStatus() {
+    this.prisma.status.findFirst().then((data) => {
+      if (data === null) {
+        this.prisma.status
+          .create({
+            data: {
+              status: true,
+            },
+          })
+          .then((data) => console.log('Created status with value: ' + data));
+      }
+    });
+    this.prisma.status.updateMany({
+      where: {
+        status: false,
+      },
+      data: {
+        status: true,
+      },
+    });
   }
 
   async setMarket(market: Market) {

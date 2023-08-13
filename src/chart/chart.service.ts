@@ -51,8 +51,8 @@ export class ChartService {
             prices: priceList,
           });
         }
-        chartList.forEach((element) => {
-          this.setChart(element);
+        chartList.forEach(async (element) => {
+          await this.setChart(element);
         });
       })
       .catch((error) => {
@@ -60,8 +60,8 @@ export class ChartService {
       });
   }
 
-  setChart(chart: Chart) {
-    const char = this.prisma.dailyChart.upsert({
+  async setChart(chart: Chart) {
+    return await this.prisma.dailyChart.upsert({
       where: {
         ticker: chart.ticker,
       },
@@ -73,7 +73,6 @@ export class ChartService {
         prices: chart.prices,
       },
     });
-    return char;
   }
 
   async getChart() {

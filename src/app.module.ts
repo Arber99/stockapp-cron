@@ -6,6 +6,7 @@ import { ChartModule } from './chart/chart.module';
 import { ChartService } from './chart/chart.service';
 import { CronService } from './cron/cron.service';
 import { PrismaModule } from './prisma/prisma.module';
+import { RestController } from './rest/rest.controller';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { PrismaModule } from './prisma/prisma.module';
     ChartModule,
     PrismaModule,
   ],
-  controllers: [],
+  controllers: [RestController],
   providers: [ChartService, CronService],
 })
 export class AppModule {}
