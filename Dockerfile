@@ -30,7 +30,7 @@ EXPOSE 3001
 
 # Run the app
 ENTRYPOINT ["sh", "-c", "\
-    ./wait-for-it.sh postgres:5432 -t 0 -- npm run prisma:migrate && \
+    ./wait-for-it.sh postgresdb:5432 -t 0 -- npm run prisma:migrate && \
     npm run prisma:push && \
     node dist/main.js & \
     wait $!"]
